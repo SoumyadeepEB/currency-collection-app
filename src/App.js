@@ -1,11 +1,12 @@
-import './App.css';
+import { useRoutes } from "react-router-dom";
+import routes from "./routes/Router";
 
 function App() {
+  const routing = useRoutes(routes);
+
   return (
-    <div>
-      <h1>Welcome to SG Currency Collection</h1>
-    </div>
+    <div className="dark">{routing}</div>
   );
-}
+};
 
 export default App;
