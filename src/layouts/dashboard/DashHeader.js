@@ -13,6 +13,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Logo } from "../../assets/images/logos/smalllogo.svg";
 import "./Dashboard.css";
+import { auth } from '../../config/firebase';
+import { signOut } from "firebase/auth";
+import { toast, ToastContainer } from 'react-toastify';
 
 const DashHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -28,11 +31,17 @@ const DashHeader = () => {
   };
 
   function handleLogout(){
-    return navigate("/login");
+    signOut(auth).then(() => {
+        toast.error("Logged out successfully!");
+        navigate("/login");
+      }).catch(() => {
+        toast.error("Something went wrong");
+      });
   }
 
   return (
     <Navbar className="theme-bg" dark expand="md">
+      <ToastContainer />
       <div className="d-flex align-items-center">
         <NavbarBrand href="/" className="d-lg-none">
           <Logo />

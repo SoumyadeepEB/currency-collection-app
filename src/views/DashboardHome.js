@@ -1,10 +1,9 @@
 import { Col, Row } from "reactstrap";
-import TopCards from "../components/dashboard/TopCards";
+import TopCards from "../components/TopCards";
 
 const DashboardHome = () => {
   return (
     <div>
-      {/***Top Cards***/}
       <Row>
         <Col sm="12" lg="4">
           <TopCards

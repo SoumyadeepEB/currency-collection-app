@@ -1,3 +1,5 @@
+import React,{ useState, useEffect, useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
 import {
   Card,
   CardTitle,
@@ -9,14 +11,45 @@ import {
   Input
 } from "reactstrap";
 import { useNavigate } from 'react-router-dom';
+import { firebaseLogin } from "../model/firebaseLogin";
+import { toast, ToastContainer } from 'react-toastify';
 
 export default function Login() {
   const navigate = useNavigate();
+  const {authInfo, setAuthInfo} = useContext(AuthContext);
+  
+  useEffect(() => {
+    const isSignedIn = authInfo ? true : false;
+    if(isSignedIn){
+      navigate("/dashboard/home");
+    }
+  }, [authInfo, navigate]);
+
+  const [credentials, setCredentials] = useState({});
+
+  function handleInputChange(event) {
+    const target = event.currentTarget;
+
+    setCredentials({
+      ...credentials,
+      [target.name]: target.value,
+    })
+  }
+
 
   function handleLogin(event){
     event.preventDefault();
-    console.log("here")
-    return navigate("/dashboard/home");
+    firebaseLogin(credentials)
+    .then((res) => {
+      //setAuthInfo(res);
+      localStorage.setItem("authInfo", JSON.stringify(res));
+      toast.success("Successfully logged in!");
+      navigate("/dashboard/home");
+    })
+    .catch((err) => {
+      console.warn(err)
+      toast.error("Invalid login credentials");
+    });
   }
 
   return (
@@ -29,12 +62,14 @@ export default function Login() {
           </CardTitle>
           <CardBody>
             <Form onSubmit={handleLogin}>
+              <ToastContainer />
               <FormGroup>
                 <Label for="loginEmail">Email</Label>
                 <Input
                   type="email"
                   name="email"
                   placeholder="Enter your email"
+                  onChange={handleInputChange}
                 />
               </FormGroup>
               <FormGroup>
@@ -43,9 +78,10 @@ export default function Login() {
                   type="password"
                   name="password"
                   placeholder="Enter your password"
+                  onChange={handleInputChange}
                 />
               </FormGroup>
-              <div className="text-center">
+              <div className="d-grid">
                 <Button type="submit" className="mt-2 btn-success">Login</Button>
               </div>
             </Form>
