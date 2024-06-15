@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   Navbar,
   Collapse,
@@ -13,13 +13,15 @@ import {
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as Logo } from "../../assets/images/logos/smalllogo.svg";
 import "./Dashboard.css";
-import { auth } from '../../config/firebase';
-import { signOut } from "firebase/auth";
 import { toast, ToastContainer } from 'react-toastify';
+import { firebaseLogout } from "../../model/firebase";
+import { removeLSData } from "../../model/localStorage";
+import { AuthContext } from "../../context/AuthProvider";
 
 const DashHeader = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const {authInfo, setAuthInfo} = useContext(AuthContext);
   const navigate = useNavigate();
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
@@ -31,12 +33,14 @@ const DashHeader = () => {
   };
 
   function handleLogout(){
-    signOut(auth).then(() => {
-        toast.error("Logged out successfully!");
-        navigate("/login");
-      }).catch(() => {
-        toast.error("Something went wrong");
-      });
+    firebaseLogout().then(() => {
+      removeLSData("authInfo");
+      setAuthInfo({});
+      toast.error("Logged out successfully!");
+      navigate("/login");
+    }).catch(() => {
+      toast.error("Something went wrong");
+    });
   }
 
   return (

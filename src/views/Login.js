@@ -11,8 +11,9 @@ import {
   Input
 } from "reactstrap";
 import { useNavigate } from 'react-router-dom';
-import { firebaseLogin } from "../model/firebaseLogin";
+import { firebaseLogin } from "../model/firebase";
 import { toast, ToastContainer } from 'react-toastify';
+import { setLSData } from "../model/localStorage";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -41,8 +42,8 @@ export default function Login() {
     event.preventDefault();
     firebaseLogin(credentials)
     .then((res) => {
-      //setAuthInfo(res);
-      localStorage.setItem("authInfo", JSON.stringify(res));
+      setAuthInfo(res.user);
+      setLSData("authInfo", res.user.accessToken);
       toast.success("Successfully logged in!");
       navigate("/dashboard/home");
     })
